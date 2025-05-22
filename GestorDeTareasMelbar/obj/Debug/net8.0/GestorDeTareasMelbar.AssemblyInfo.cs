@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GestorDeTareasMelbar")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+988469217fd7d68c9ac8233b118352581c524c65")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5e363912cc45138d3bd47fcada0d45cbb2527d5e")]
 [assembly: System.Reflection.AssemblyProductAttribute("GestorDeTareasMelbar")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GestorDeTareasMelbar")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
