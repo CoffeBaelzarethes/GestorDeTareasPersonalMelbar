@@ -8,6 +8,11 @@ namespace GestorDeTareasMelbar.Database
     {
         public MelbarDB(DbContextOptions<MelbarDB> options) : base(options) { }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            base.OnConfiguring(optionsBuilder);
+        }
+
         // Ejemplo: DbSet para una tabla
         public DbSet<Proyecto> Proyecto { get; set; }
         public DbSet<Integrante> Integrante { get; set; }

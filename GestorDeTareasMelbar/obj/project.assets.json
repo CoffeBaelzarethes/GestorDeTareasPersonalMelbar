@@ -725,11 +725,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Cafe Marino\\source\\repos\\GestorDeTareasPersonalMelbar\\GestorDeTareasMelbar\\GestorDeTareasMelbar.csproj",
+      "projectUniqueName": "C:\\Users\\Cafe Marino\\source\\repos\\GestorDeTareasMelbar\\GestorDeTareasMelbar\\GestorDeTareasMelbar.csproj",
       "projectName": "GestorDeTareasMelbar",
-      "projectPath": "C:\\Users\\Cafe Marino\\source\\repos\\GestorDeTareasPersonalMelbar\\GestorDeTareasMelbar\\GestorDeTareasMelbar.csproj",
+      "projectPath": "C:\\Users\\Cafe Marino\\source\\repos\\GestorDeTareasMelbar\\GestorDeTareasMelbar\\GestorDeTareasMelbar.csproj",
       "packagesPath": "C:\\Users\\Cafe Marino\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Cafe Marino\\source\\repos\\GestorDeTareasPersonalMelbar\\GestorDeTareasMelbar\\obj\\",
+      "outputPath": "C:\\Users\\Cafe Marino\\source\\repos\\GestorDeTareasMelbar\\GestorDeTareasMelbar\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
