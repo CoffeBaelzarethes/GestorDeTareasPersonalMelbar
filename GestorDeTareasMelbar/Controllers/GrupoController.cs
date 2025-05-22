@@ -1,4 +1,5 @@
 ﻿using GestorDeTareasMelbar.Database;
+using GestorDeTareasMelbar.Database.Tables;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,9 +18,9 @@ namespace GestorDeTareasMelbar.Controllers
         }
 
         [HttpGet]
-        public ActionResult Get()
+        public Grupo Get()
         {
-            return melbarDB.Grupo;
+            return melbarDB.Grupo.First<Grupo>(); ;
         }
     }
 }

@@ -8,6 +8,16 @@ namespace GestorDeTareasMelbar.Database
     {
         public MelbarDB(DbContextOptions<MelbarDB> options) : base(options) { }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Grupo>()
+                .HasOne(g => g.Proyecto)
+                .WithMany(p => p.Grupos)
+                .HasForeignKey(g => g.Proyecto_idProyecto);
+        }
+
         // Ejemplo: DbSet para una tabla
         public DbSet<Proyecto> Proyecto { get; set; }
         public DbSet<Integrante> Integrante { get; set; }
