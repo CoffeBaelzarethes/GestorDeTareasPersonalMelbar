@@ -1,2 +1,13 @@
 # Visual Studio files
+# .gitignore para .NET
+bin/
+obj/
 .vs/
+TestResults/
+*.user
+*.suo
+*.log
+packages/
+node_modules/
+appsettings.Development.json
+secrets.json
