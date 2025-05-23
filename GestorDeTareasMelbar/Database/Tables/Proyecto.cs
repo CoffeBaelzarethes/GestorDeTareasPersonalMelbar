@@ -13,7 +13,8 @@ namespace GestorDeTareasMelbar.Database.Tables
 
         public DateTime fecha_creacion { get; set; }
 
-        public ICollection<Grupo> Grupos { get; set; }
+        public ICollection<Grupo> Grupos { get; set; } = [];
+        public ICollection<ProyectoIntegrante> ProyectoIntegrantes { get; set; } = [];
 
     }
 }

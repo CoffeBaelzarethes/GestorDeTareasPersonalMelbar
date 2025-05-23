@@ -5,8 +5,10 @@ namespace GestorDeTareasMelbar.Database.Tables
     public class Integrante
     {
         [Key]
-        public int idIntegrante { get; set; }
-        [StringLength(60)]
-        public string nombre { get; set; }
+        public int IdIntegrante { get; set; }
+        [StringLength(65)]
+        public string Nombre { get; set; }
+
+        public ICollection<ProyectoIntegrante> ProyectoIntegrantes { get; set; } = [];
     }
 }

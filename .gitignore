@@ -2,6 +2,8 @@
 # .gitignore para .NET
 bin/
 obj/
+GestorDeTareasMelbar/obj/
+GestorDeTareasMelbar/bin/
 .vs/
 TestResults/
 *.user
