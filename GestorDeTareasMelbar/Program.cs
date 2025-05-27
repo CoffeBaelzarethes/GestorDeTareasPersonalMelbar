@@ -7,11 +7,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 
 // Configuración de MySQL con EF Core
-builder.Services.AddDbContext<MelbarDB>(options =>
-    options.UseMySql(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
-    ));
+builder.Services.AddDbContext<MelbarDB>(options => {
+    string connnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+    options.UseMySql(connnectionString, ServerVersion.AutoDetect(connnectionString)); 
+});
 
 var app = builder.Build();
 
