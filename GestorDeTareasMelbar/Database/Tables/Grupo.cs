@@ -7,18 +7,17 @@ namespace GestorDeTareasMelbar.Database.Tables
     public class Grupo
     {
         [Key]
-        public Guid idGrupo { get; set; }
+        public int IdGrupo { get; set; }
 
         [Required] // Campo obligatorio
         [StringLength(45)] // Longitud máxima para VARCHAR
-        public string nombre { get; set; }
+        public string Nombre { get; set; }
 
-        [ForeignKey("Proyecto")]
-        public int Proyecto_idProyecto { get; set; }
+        public int Proyecto_IdProyecto { get; set; }
 
         public Proyecto Proyecto { get; set; }
 
-        public ICollection<Tarea> Tareas { get; set; }
+        public ICollection<Tarea> Tareas { get; set; } = [];
 
 
     }
