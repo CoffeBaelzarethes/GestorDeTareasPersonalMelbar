@@ -3,6 +3,16 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Define la política de CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("PermitirAngular",
+        policy => policy
+            .WithOrigins("http://localhost:4200")
+            .AllowAnyHeader()
+            .AllowAnyMethod());
+});
+
 // Add services to the container.
 builder.Services.AddRazorPages();
 
@@ -23,9 +33,12 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+// Usa CORS antes del middleware de controladores
+app.UseCors("PermitirAngular");
+
 app.MapControllers();
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();

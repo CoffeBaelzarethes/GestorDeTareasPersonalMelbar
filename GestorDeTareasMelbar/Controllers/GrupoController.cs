@@ -3,6 +3,7 @@ using GestorDeTareasMelbar.Database.Tables;
 using GestorDeTareasMelbar.DTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace GestorDeTareasMelbar.Controllers
 {
@@ -79,6 +80,8 @@ namespace GestorDeTareasMelbar.Controllers
 
             if(!melbarDB.Proyecto.Any(p => p.idProyecto == dto.Proyecto_idProyecto)) // Any: Determina si un elemento de una secuencia existe o satisface una condición.
 
+            Console.WriteLine("Updating group");
+
             grupoExistente.Nombre = dto.Nombre;
             grupoExistente.Proyecto_IdProyecto = dto.Proyecto_idProyecto;
 
@@ -96,7 +99,13 @@ namespace GestorDeTareasMelbar.Controllers
             {
                 return NotFound();
             }
-            
+
+            var books = melbarDB.Tarea.Where(i => i.Grupo_idGrupo == id);
+            foreach(var book in books)
+            {
+                melbarDB.Tarea.Remove(book);
+            }
+
             melbarDB.Grupo.Remove(grupo);
             melbarDB.SaveChanges();
 
