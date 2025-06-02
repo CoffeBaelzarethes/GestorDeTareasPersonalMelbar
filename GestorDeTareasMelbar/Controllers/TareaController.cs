@@ -41,7 +41,7 @@ namespace GestorDeTareasMelbar.Controllers
         [HttpPost]
         public ActionResult Post(TareaCreacionDTO tarea)
         {
-            melbarDB.Tarea.Add(new Tarea
+            var newTarea = melbarDB.Tarea.Add(new Tarea
             {
                 Nombre = tarea.Nombre,
                 Estado = tarea.Estado,
@@ -51,25 +51,45 @@ namespace GestorDeTareasMelbar.Controllers
             });
             melbarDB.SaveChanges();
 
-            return NoContent();
+            TareaToShowDTO toShow = new TareaToShowDTO()
+            {
+                IdTarea = newTarea.Entity.IdTarea,
+                Nombre = newTarea.Entity.Nombre,
+                Estado = newTarea.Entity.Estado,
+                Vencimiento = newTarea.Entity.Vencimiento,
+                Nota = newTarea.Entity.Nota,
+                Grupo_idGrupo = newTarea.Entity.Grupo_idGrupo
+            };
+
+            return Ok(toShow);
         }
 
         [HttpPut("{id:int}")]
         public ActionResult Put(int id, TareaCreacionDTO tarea)
         {
-            if(!melbarDB.Tarea.Any<Tarea>(t => t.IdTarea == id))
-            {
-                return BadRequest();
-            }
+            var entidad = melbarDB.Tarea.FirstOrDefault(t => t.IdTarea == id);
+            if (entidad == null)
+                return NotFound();
 
-            melbarDB.Update(new Tarea { 
-                IdTarea = id, Nombre = tarea.Nombre, Estado = tarea.Estado,
-                Nota = tarea.Nota, Vencimiento = tarea.Vencimiento, 
-                Grupo_idGrupo = tarea.Grupo_idGrupo
-            });
+            entidad.Nombre = tarea.Nombre;
+            entidad.Estado = tarea.Estado;
+            entidad.Nota = tarea.Nota;
+            entidad.Vencimiento = tarea.Vencimiento;
+            entidad.Grupo_idGrupo = tarea.Grupo_idGrupo;
+
             melbarDB.SaveChanges();
 
-            return NoContent();
+            TareaToShowDTO toShow = new TareaToShowDTO
+            {
+                IdTarea = entidad.IdTarea,
+                Nombre = entidad.Nombre,
+                Estado = entidad.Estado,
+                Vencimiento = entidad.Vencimiento,
+                Nota = entidad.Nota,
+                Grupo_idGrupo = entidad.Grupo_idGrupo
+            };
+
+            return Ok(toShow);
         }
 
         [HttpDelete("{id:int}")]
