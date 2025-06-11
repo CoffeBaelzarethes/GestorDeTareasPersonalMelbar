@@ -4,6 +4,7 @@ using GestorDeTareasMelbar.DTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 using System.Linq;
 
 namespace GestorDeTareasMelbar.Controllers
@@ -36,7 +37,7 @@ namespace GestorDeTareasMelbar.Controllers
                 return NotFound();
             }
 
-            return integrante;
+            return Ok(integrante);
         }
 
         [HttpGet("integrante/proyectos/{id:int}")]
@@ -47,14 +48,19 @@ namespace GestorDeTareasMelbar.Controllers
 
             if (proyectoIntegrantes is null || proyectoIntegrantes.Count == 0)
             {
-                return NotFound();
+                return NotFound("No se han encontrado proyectos asociados a ese id");
             }
 
-            return proyectoIntegrantes;
+            foreach(ProyectoIntegrante pi in proyectoIntegrantes)
+            {
+                Trace.WriteLine("IdIntegrante: " + pi.IntegranteIdIntegrante + " IdProyecto: " + pi.ProyectoIdProyecto);
+            }
+
+            return Ok(proyectoIntegrantes);
         }
 
         [HttpPost]
-        public ActionResult Post(IntegranteCreacionDTO integrante)
+        public ActionResult<Integrante> Post(IntegranteCreacionDTO integrante)
         {
             var entity = melbarDB.Integrante.Add(new Integrante
             {
@@ -63,42 +69,39 @@ namespace GestorDeTareasMelbar.Controllers
 
             melbarDB.SaveChanges();
 
-            // Agregando los datos a la tabla intermedia que vincula los proyectos con los integrantes
-            foreach (int proyectoId in integrante.ProyectoIds)
+            return Ok(entity.Entity);
+        }
+
+        [HttpPost("integrante/proyecto")]
+        public ActionResult<Integrante> PostIntegranteProyecto(IntegranteProyectoCreacionDTO dto)
+        {
+            var entity = melbarDB.ProyectoIntegrante.Add(new ProyectoIntegrante()
             {
-                if(melbarDB.Proyecto.Any(p => p.idProyecto == proyectoId))
-                {
-                    melbarDB.ProyectoIntegrante.Add(new ProyectoIntegrante
-                    {
-                        IntegranteIdIntegrante = entity.Entity.IdIntegrante,
-                        ProyectoIdProyecto = proyectoId
-                    });
-                }
-            }
+                IntegranteIdIntegrante = dto.IntegranteIdIntegrante,
+                ProyectoIdProyecto = dto.ProyectoIdProyecto
+            });
 
             melbarDB.SaveChanges();
 
-            Console.WriteLine(integrante.ProyectoIds);
-
-            return NoContent();
+            return Ok(entity.Entity);
         }
 
         [HttpPut("{id:int}")]
-        public ActionResult Put(int id, IntegranteCreacionDTO integrante)
+        public ActionResult<Integrante> Put(int id, IntegranteCreacionDTO integrante)
         {
             if (!melbarDB.Integrante.Any<Integrante>(i => i.IdIntegrante == id))
             {
                 return BadRequest();
             }
 
-            melbarDB.Update(new Integrante
+            var entity = melbarDB.Update(new Integrante
             {
                 IdIntegrante = id,
                 Nombre = integrante.Nombre,
             });
             melbarDB.SaveChanges();
 
-            return NoContent();
+            return Ok(entity.Entity);
         }
 
         [HttpDelete("{id:int}")]

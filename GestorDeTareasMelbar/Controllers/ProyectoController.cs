@@ -3,6 +3,8 @@ using GestorDeTareasMelbar.Database.Tables;
 using GestorDeTareasMelbar.DTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace GestorDeTareasMelbar.Controllers
 {
@@ -65,9 +67,6 @@ namespace GestorDeTareasMelbar.Controllers
             return CreatedAtAction(nameof(GetProyecto), new { id = nuevoProyecto.idProyecto }, nuevoProyecto);
         }
 
-
-
-
         [HttpPut("{id}")]
         public ActionResult PutProyecto(int id, ProyectoCreacionDTO dto)
         {
@@ -78,23 +77,52 @@ namespace GestorDeTareasMelbar.Controllers
             proyectoExistente.Nombre = dto.Nombre;
 
             melbarDB.SaveChanges();
-            return NoContent();
+            return Ok(proyectoExistente);
         }
 
 
 
         [HttpDelete("{id}")]
-        public ActionResult<Grupo> DeleteProyecto(int id)
+        public ActionResult<Proyecto> DeleteProyecto(int id)
         {
             var proyecto = melbarDB.Proyecto.FirstOrDefault(p => p.idProyecto == id);
 
             if (proyecto == null)
             {
+                //Trace.WriteLine("Not Found");
                 return NotFound();
             }
 
+            /*var grupos = melbarDB.Grupo
+                .Where(g => g.Proyecto_IdProyecto == proyecto.idProyecto)
+                .ToList(); // Fuerzo la carga completa antes del foreach
+
+            foreach (Grupo grupo in grupos) // grupos en vez de esto porque no se pueden usar las
+                                            // conecciones simultaneamente melbarDB.Grupo.Where(g =>
+                                            // g.Proyecto_IdProyecto == proyecto.idProyecto))
+            {
+                melbarDB.Tarea.Where(t => t.Grupo_idGrupo == grupo.IdGrupo).ExecuteDelete();
+                melbarDB.SaveChanges();
+            }*/
+
+            using var tx = melbarDB.Database.BeginTransaction();
+
+            var grupoIds = melbarDB.Grupo
+                .Where(g => g.Proyecto_IdProyecto == proyecto.idProyecto)
+                .Select(g => g.IdGrupo)
+                .ToList();
+
+            melbarDB.Tarea
+                .Where(t => grupoIds.Contains(t.Grupo_idGrupo))
+                .ExecuteDelete();
+
+            melbarDB.Grupo.Where(g => g.Proyecto_IdProyecto == proyecto.idProyecto).ExecuteDelete();
+
+            melbarDB.ProyectoIntegrante.Where(pi => pi.ProyectoIdProyecto == proyecto.idProyecto).ExecuteDelete();
+
             melbarDB.Proyecto.Remove(proyecto);
-            melbarDB.SaveChanges();
+
+            tx.Commit();
 
             return NoContent();
         }
