@@ -104,7 +104,7 @@ namespace GestorDeTareasMelbar.Controllers
         [HttpDelete("{id:int}")]
         public ActionResult Delete(int id)
         {
-            int elementosBorrados = melbarDB.Integrante.Where<Integrante>(t => t.IdIntegrante== id)
+            int elementosBorrados = melbarDB.Integrante.Where<Integrante>(t => t.IdIntegrante == id)
                 .ExecuteDelete();
 
             if (elementosBorrados == 0)
