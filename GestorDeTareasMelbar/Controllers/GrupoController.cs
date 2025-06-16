@@ -42,7 +42,7 @@ namespace GestorDeTareasMelbar.Controllers
 
             if (grupos == null || grupos.Count == 0)  // ver si no hay registros en la bd
             {
-                return NotFound("No hay grupos encontrados");
+                return Ok(new List<Grupo>());
             }
 
             return Ok(grupos);
