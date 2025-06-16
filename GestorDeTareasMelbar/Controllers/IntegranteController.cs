@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Linq;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GestorDeTareasMelbar.Controllers
 {
@@ -34,7 +35,7 @@ namespace GestorDeTareasMelbar.Controllers
 
             if (integrante is null)
             {
-                return NotFound();
+                return Ok(null);
             }
 
             return Ok(integrante);
@@ -51,13 +52,39 @@ namespace GestorDeTareasMelbar.Controllers
                 return NotFound("No se han encontrado proyectos asociados a ese id");
             }
 
-            foreach(ProyectoIntegrante pi in proyectoIntegrantes)
+            foreach (ProyectoIntegrante pi in proyectoIntegrantes)
             {
                 Trace.WriteLine("IdIntegrante: " + pi.IntegranteIdIntegrante + " IdProyecto: " + pi.ProyectoIdProyecto);
             }
 
             return Ok(proyectoIntegrantes);
         }
+
+
+        [HttpGet("por-proyecto/{proyectoId:int}")]
+        public ActionResult<IEnumerable<Integrante>> GetIntegrantesPorProyecto(int proyectoId)
+        {
+            var integrantes = melbarDB.ProyectoIntegrante
+                .Where(pi => pi.ProyectoIdProyecto == proyectoId)
+                .Include(pi => pi.Integrante)
+                .Select(pi => pi.Integrante)
+                .ToList();
+
+            if (integrantes == null || integrantes.Count == 0)
+                return NotFound("No hay integrantes en ese proyecto");
+
+            return Ok(integrantes);
+        }
+
+        [HttpGet("existe/{nombre}")]
+        public async Task<IActionResult> ExisteIntegrantePorNombre(string nombre)
+        {
+            var existe = await melbarDB.Integrante
+                .AnyAsync(i => i.Nombre.ToLower() == nombre.ToLower());
+
+            return Ok(existe); // true o false
+        }
+
 
         [HttpPost]
         public ActionResult<Integrante> Post(IntegranteCreacionDTO integrante)
@@ -86,6 +113,31 @@ namespace GestorDeTareasMelbar.Controllers
             return Ok(entity.Entity);
         }
 
+
+        [HttpPost("integrante/proyecto/por_nombre")]
+        public async Task<ActionResult> ByName(AgregarIntegranteDTO dto)
+        {
+            var integrante = melbarDB.Integrante.Where<Integrante>(i => i.Nombre == dto.Nombre).First();
+
+            if (integrante == null)
+            {
+                return Ok("El integrante no existe");
+            }
+
+            var relacion = new ProyectoIntegrante
+            {
+                IntegranteIdIntegrante = integrante.IdIntegrante,
+                ProyectoIdProyecto = dto.ProyectoIdProyecto
+            };
+
+            melbarDB.ProyectoIntegrante.Add(relacion);
+            await melbarDB.SaveChangesAsync();
+
+            return Ok();
+        }
+
+
+
         [HttpPut("{id:int}")]
         public ActionResult<Integrante> Put(int id, IntegranteCreacionDTO integrante)
         {
@@ -112,12 +164,60 @@ namespace GestorDeTareasMelbar.Controllers
 
             if (elementosBorrados == 0)
             {
-                return NotFound();
+                return Ok(new { mensaje = "No se encontró el registro" });
             }
 
             melbarDB.SaveChanges();
 
-            return NoContent();
+            return Ok();
         }
+
+        [HttpDelete("by_name/{nombre}")]
+        public ActionResult DeleteByName(string nombre)
+        {
+            int elementosBorrados = melbarDB.Integrante.Where<Integrante>(t => t.Nombre == nombre)
+                .ExecuteDelete();
+
+            if (elementosBorrados == 0)
+            {
+                return Ok(new { mensaje = "No se encontró el registro" });
+            }
+
+            melbarDB.SaveChanges();
+
+            return Ok();
+        }
+
+
+        [HttpDelete("relacion/{idProyecto:int}/{nombre}")]
+        public ActionResult EliminarRelacion(int idProyecto, string nombre)
+        {
+            var integrante = melbarDB.Integrante
+                .FirstOrDefault(i => i.Nombre == nombre);
+
+            if (integrante == null)
+            {
+                return Ok(new { mensaje = "El integrante no existe" });
+
+            }
+
+            var relacion = melbarDB.ProyectoIntegrante
+                .FirstOrDefault(r => r.ProyectoIdProyecto == idProyecto && r.IntegranteIdIntegrante == integrante.IdIntegrante);
+
+            if (relacion == null)
+            {
+                return Ok(new { mensaje = "La relación no existe: " + idProyecto + " Integrante: " + integrante.IdIntegrante });
+            }
+
+            melbarDB.ProyectoIntegrante.Remove(relacion);
+            melbarDB.SaveChanges();
+
+            return Ok(new { mensaje = "Relación eliminada" });
+
+        }
+
+
     }
 }
+
+        
